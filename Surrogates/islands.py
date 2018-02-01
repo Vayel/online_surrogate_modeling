@@ -1,5 +1,6 @@
 import numba
 import numpy as np
+from numpy import ma
 
 numba.jit()
 
@@ -205,6 +206,10 @@ def island_abm(rho=0.01,
 
         GDP[t, 0] = np.sum(A[:, 4])
 
+    #JH fix around the divide by zero error supressed in original code
+    np.seterr(divide='ignore')
     log_GDP = np.log(GDP)
+    np.seterr(divide='warn')
+    log_GDP[np.isneginf(log_GDP)] = 0
 
     return log_GDP

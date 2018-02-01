@@ -1,11 +1,9 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 from skopt.learning import GaussianProcessRegressor
 
 from Surrogates.functions import *
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
 from Surrogates.islands import evaluate_islands_on_set
 from Surrogates.samplers import get_sobol_samples, get_unirand_samples
 
@@ -32,9 +30,9 @@ islands_exploration_range = np.array([
     (0.0, 1.0),  # pi
     (0.0, 1.0)])  # eps
 
-param_dims = islands_exploration_range.shape[0]
+param_dims = islands_exploration_range.shape[0] # returns number of params to explore
 
-load_data = True
+load_data = False
 
 if load_data:  # This is only for the budget = 500 setting
     evaluated_set_X_batch = pd.read_csv('Surrogates/Data/X.csv', index_col=0).values

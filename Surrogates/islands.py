@@ -1,6 +1,5 @@
 import numba
 import numpy as np
-from numpy import ma
 
 numba.jit()
 

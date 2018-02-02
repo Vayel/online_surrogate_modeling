@@ -67,8 +67,8 @@ def calibration_measure(log_GDP):
 numba.jit()
 
 
-def calibration_condition(average_GDP_growth_rate, threshold_condition):
-    return average_GDP_growth_rate >= threshold_condition
+def calibration_condition(average_GDP_growth_rate, calibration_thresh=1.0):
+    return average_GDP_growth_rate >= calibration_thresh
 
 
 numba.jit()

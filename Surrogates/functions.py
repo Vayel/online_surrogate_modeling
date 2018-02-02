@@ -167,7 +167,7 @@ def fit_entropy_classifier(X, y, calibration_threshold):
     ------
     surrogate_model_fitted : A surrogate model fitted
     """
-    y_binary = calibration_condition(y, calibration_threshold)
+    y_binary = calibration_condition(y)
     _, surrogate_parameter_space = set_surrogate_as_gbt()
 
     def objective(params):

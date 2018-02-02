@@ -31,10 +31,10 @@ def get_unirand_samples(n_dimensions, samples, parameter_support):
     # Get the range for the support
     support_range = parameter_support[:, 1] - parameter_support[:, 0]
 
-    # Generate the Sobol samples
+    # Generate the samples
     random_samples = np.random.rand(n_dimensions, samples).T
 
-    # Compute the parameter mappings between the Sobol samples and supports
+    # Compute the parameter mappings between the unirand samples and supports
     unirand_samples = np.vstack([
         np.multiply(s, support_range) + parameter_support[:, 0]
         for s in random_samples])

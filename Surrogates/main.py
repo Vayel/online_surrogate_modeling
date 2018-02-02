@@ -11,7 +11,6 @@ from Surrogates.samplers import get_sobol_samples, get_unirand_samples
 """ Default Algorithm Tuning Constants """
 _N_EVALS = 10
 _N_SPLITS = 5
-_CALIBRATION_THRESHOLD = 1.00
 
 budget = 500
 
@@ -41,47 +40,42 @@ if load_data:  # This is only for the budget = 500 setting
     oos_set = pd.read_csv('Surrogates/InputData/X_oos.csv', index_col=0).values
     y_test = pd.read_csv('Surrogates/InputData/y_oos.csv', index_col=0).values
 else:
+    start = time.time()
+
     # Generate Sobol samples for training set
     n_dimensions = islands_exploration_range.shape[0]
     evaluated_set_X_batch = get_sobol_samples(n_dimensions, budget, islands_exploration_range)
-
-    start = time.time()
     evaluated_set_y_batch = evaluate_islands_on_set(evaluated_set_X_batch)
-    end = time.time()
-    print(end - start)
+
     print("Finished Evaluation on Islands")
+    print("Running next step...")
 
     pd.DataFrame(evaluated_set_X_batch).to_csv("Surrogates/Data/X.csv")
     pd.DataFrame(evaluated_set_y_batch).to_csv("Surrogates/Data/y.csv")
 
+    # At this point we have the Sobol sampled parameters and their ABM evaluations (i.e. GDP from the ABM).
+
     # Build Out-of-sample set
-
-    start = time.time()
     oos_set = get_unirand_samples(n_dimensions, final_test_size * budget, islands_exploration_range)
-    end = time.time()
-    print(end - start)
-    print("Finished building OOS set")
 
-    start = time.time()
     selections = []
     for i, v in enumerate(oos_set):
         if v not in evaluated_set_X_batch:
             selections.append(i)
     oos_set = unique_rows(oos_set[selections])[:final_test_size]
-    end = time.time()
-    print(end - start)
-    print("Finished building OOS set")
 
+    print("Finished building OOS set")
+    print("Running next step...")
 
     # Evaluate the test set for the ABM response
-    start = time.time()
     y_test = evaluate_islands_on_set(oos_set)
-    end = time.time()
-    print(end - start)
-    print("Finished building test set for ABM response")
 
     pd.DataFrame(oos_set).to_csv("Surrogates/Data/X_oos.csv")
     pd.DataFrame(y_test).to_csv("Surrogates/Data/y_oos.csv")
+
+    end = time.time()
+    print(end - start)
+    print("Finished building test set for ABM response")
 
 # Compute the Kriging surrogate
 surrogate_models_kriging = GaussianProcessRegressor(random_state=0)
@@ -89,6 +83,10 @@ surrogate_models_kriging.fit(evaluated_set_X_batch, evaluated_set_y_batch)
 
 # Compute the XGBoost surrogate
 surrogate_model_XGBoost = fit_surrogate_model(evaluated_set_X_batch, evaluated_set_y_batch)
+
+# At this point, we have the XGBoost surrogate model.  What we need next is the bit which returns the parameterisations
+# for positive calibrations.
+
 
 y_hat_test = [None] * 2
 y_hat_test[0] = surrogate_models_kriging.predict(oos_set)

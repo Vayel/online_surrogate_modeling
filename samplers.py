@@ -5,6 +5,28 @@ import numpy as np
 numba.jit
 
 
+def jsonTransform(parametersRange, samples, extractor):
+    parameterNames = parametersRange.keys()
+    n_dimensions = len(parameterNames)
+    parameterSupports = np.array([i for i in parametersRange.values()])
+
+    outputs = extractor(n_dimensions, samples, parameterSupports)
+
+    parameters = []
+    parameterNames = parametersRange.keys()
+    for output in outputs:
+        parameters.append(dict(zip(parameterNames,output)))
+
+    return parameters
+
+def jsonTransformSobol(parametersRange, samples):
+    return jsonTransform(parametersRange,samples,get_sobol_samples)
+
+
+def jsonTransformOOS(parametersRange, samples):
+    return jsonTransform(parametersRange,samples,get_unirand_samples)
+
+
 def get_sobol_samples(n_dimensions, samples, parameter_support):
     """
     """

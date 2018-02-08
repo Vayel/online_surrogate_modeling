@@ -1,5 +1,5 @@
 """ Ignore Warnings """
-from Surrogates.islands import evaluate_islands_on_set, calibration_condition
+from islands import evaluate_islands_on_set, calibration_condition
 
 import numpy as np
 from scipy.stats.distributions import entropy
@@ -91,7 +91,7 @@ def custom_metric_binary(y_hat, y):
 numba.jit()
 
 
-def fit_surrogate_model(X, y):
+def fitXGBoost(X, y):
     _N_EVALS = 10
     _N_SPLITS = 5
 

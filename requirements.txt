@@ -1,0 +1,10 @@
+requests
+numpy
+scipy
+numba
+xgboost
+sobol_seq
+matplotlib
+pandas
+seaborn
+scikit-optimize
